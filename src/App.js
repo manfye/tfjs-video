@@ -62,8 +62,8 @@ async function loadModel(url) {
   // hand prediction from the MediaPipe graph.
   const predictions = await model.estimateHands(document.getElementById('img'));
   if (predictions.length > 0) {
-   
-
+    console.log(predictions)
+Draw(predictions[0].annotations)
     for (let i = 0; i < predictions.length; i++) {
       const keypoints = predictions[i].landmarks;
 
@@ -82,6 +82,75 @@ async function loadModel(url) {
   
 }
 
+
+function Draw(data) {
+  console.log(data);
+  var cnvs = document.getElementById("myCanvas");
+
+  cnvs.style.position = "absolute";
+
+  var ctx = cnvs.getContext("2d");
+  data.middleFinger.map((i) => {
+    ctx.beginPath();
+    ctx.arc(i[0], i[1], 5, 0, 2 * Math.PI, false);
+    ctx.strokeStyle = "#FF0000";
+
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  });
+
+  data.indexFinger.map((i) => {
+    ctx.beginPath();
+    ctx.arc(i[0], i[1], 5, 0, 2 * Math.PI, false);
+    ctx.strokeStyle = "#FF0000";
+
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  });
+
+  data.ringFinger.map((i) => {
+    ctx.beginPath();
+    ctx.arc(i[0], i[1], 5, 0, 2 * Math.PI, false);
+    ctx.strokeStyle = "#FF0000";
+
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  });
+
+  data.thumb.map((i) => {
+    ctx.beginPath();
+    ctx.arc(i[0], i[1], 5, 0, 2 * Math.PI, true);
+    ctx.strokeStyle = "#FF0000";
+
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  });
+
+  
+  data.pinky.map((i) => {
+    ctx.beginPath();
+    ctx.arc(i[0], i[1], 5, 0, 2 * Math.PI, false);
+    ctx.strokeStyle = "#FF0000";
+
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  });
+
+  data.palmBase.map((i) => {
+    ctx.beginPath();
+    ctx.arc(i[0], i[1], 5, 0, 2 * Math.PI, false);
+    ctx.strokeStyle = "#FF0000";
+
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  });
+
+
+
+}
+
+
+  
 
 
 async function loadMetadata(url) {
@@ -149,8 +218,15 @@ useEffect(()=>{
         </Toolbar>
       </AppBar>
       <Grid container style={{ height:"90vh", padding:20}}>
+      <img style={{width:1080, height: 720}} id="img" src="hand.jpg"></img>
+
+<canvas id='myCanvas' width="1080" height="720" style={{backgroundColor:"transparent"}} >
+
+  
+
+</canvas>
       <Grid item lg={6} xs={12} style={{display:"flex",alignItems:"center", flexDirection:"column"}}>
-      <img id="img" src="hand.jpg"></img>
+   
       <TextField
           id="standard-read-only-input"
           label="Type your sentences here"
