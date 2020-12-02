@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import * as tf from '@tensorflow/tfjs';
 import padSequences from './helper/paddedSeq'
 import {
   TextField,
@@ -17,8 +16,10 @@ import {
 import MenuIcon from '@material-ui/icons/Menu';
 import { makeStyles } from '@material-ui/core/styles';
 import { blue } from '@material-ui/core/colors';
-
-
+import * as handpose from '@tensorflow-models/handpose';
+import * as tf from '@tensorflow/tfjs-core';
+import '@tensorflow/tfjs-backend-webgl';
+import imageDataURI from 'image-data-uri'
 
 function App() {
   const useStyles = makeStyles((theme) => ({
@@ -50,16 +51,38 @@ const [trimedText, setTrim] = useState("")
 const [seqText, setSeq] = useState("")
 const [padText, setPad] = useState("")
 const [inputText, setInput] = useState("")
-
+const [imageData, setImageData] = useState("")
 
 async function loadModel(url) {
+  
   try {
-    const model = await tf.loadLayersModel(url.model);
-    setModel(model);
+    // Load the MediaPipe handpose model.
+  const model = await handpose.load();
+  // Pass in a video stream (or an image, canvas, or 3D tensor) to obtain a
+  // hand prediction from the MediaPipe graph.
+  const predictions = await model.estimateHands(document.getElementById('img'));
+  if (predictions.length > 0) {
+   
+
+    for (let i = 0; i < predictions.length; i++) {
+      const keypoints = predictions[i].landmarks;
+
+      // Log hand keypoints.
+      for (let i = 0; i < keypoints.length; i++) {
+        const [x, y, z] = keypoints[i];
+        console.log(`Keypoint ${i}: [${x}, ${y}, ${z}]`);
+      }
+    }
+  }
   } catch (err) {
     console.log(err);
   }
+   
+  
+  
 }
+
+
 
 async function loadMetadata(url) {
   try {
@@ -127,6 +150,7 @@ useEffect(()=>{
       </AppBar>
       <Grid container style={{ height:"90vh", padding:20}}>
       <Grid item lg={6} xs={12} style={{display:"flex",alignItems:"center", flexDirection:"column"}}>
+      <img id="img" src="hand.jpg"></img>
       <TextField
           id="standard-read-only-input"
           label="Type your sentences here"

@@ -5,10 +5,15 @@
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
+    "@tensorflow-models/handpose": "^0.0.6",
     "@tensorflow/tfjs": "^2.4.0",
+    "@tensorflow/tfjs-backend-webgl": "^2.7.0",
+    "@tensorflow/tfjs-converter": "^2.7.0",
+    "@tensorflow/tfjs-core": "^2.7.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "image-data-uri": "^2.0.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.3"
