@@ -36,7 +36,7 @@ function App() {
 
   const url = {
     model:
-      "https://cdn.esyms.com/emailImg/model.json",
+      "https://orangerx.b-cdn.net/model/model.json",
   };
 
   const [inputText, setInput] = useState("");
