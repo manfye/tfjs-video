@@ -14,9 +14,12 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "image-data-uri": "^2.0.1",
+    "jslib-html5-camera-photo": "^3.1.6",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.3"
+    "react-html5-camera-photo": "^1.5.4",
+    "react-scripts": "3.4.3",
+    "react-webcam": "^5.2.2"
   },
   "scripts": {
     "start": "react-scripts start",

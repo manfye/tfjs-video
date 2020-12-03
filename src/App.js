@@ -21,6 +21,8 @@ import * as tf from '@tensorflow/tfjs-core';
 import '@tensorflow/tfjs-backend-webgl';
 import imageDataURI from 'image-data-uri'
 
+import CameraPhoto, { FACING_MODES } from 'jslib-html5-camera-photo';
+
 function App() {
   const useStyles = makeStyles((theme) => ({
     root: {
@@ -41,17 +43,10 @@ function App() {
     metadata: 'https://storage.googleapis.com/tfjs-models/tfjs/sentiment_cnn_v1/metadata.json'
 };
 
-const OOV_INDEX = 2;
 
-const [metadata, setMetadata] = useState();
-const [model, setModel] = useState();
-const [testText, setText] = useState("");
-const [testScore, setScore] = useState("");
-const [trimedText, setTrim] = useState("")
-const [seqText, setSeq] = useState("")
-const [padText, setPad] = useState("")
+
 const [inputText, setInput] = useState("")
-const [imageData, setImageData] = useState("")
+const [imageData, setImageData] = useState("hand.jpg")
 
 async function loadModel(url) {
   
@@ -60,10 +55,102 @@ async function loadModel(url) {
   const model = await handpose.load();
   // Pass in a video stream (or an image, canvas, or 3D tensor) to obtain a
   // hand prediction from the MediaPipe graph.
+  predictionFunction()
+  } catch (err) {
+    console.log(err);
+  }
+   
+  
+  
+}
+
+
+
+function Draw(data, fullData) {
+  console.log(data);
+  var cnvs = document.getElementById("myCanvas");
+
+  cnvs.style.position = "absolute";
+
+  var ctx = cnvs.getContext("2d");
+  ctx.clearRect(0, 0, cnvs.width, cnvs.height);
+
+  fullData.landmarks.map((i) => {
+    ctx.beginPath();
+    ctx.arc(i[0], i[1], 5, 0, 2 * Math.PI, false);
+    ctx.strokeStyle = "#FF0000";
+
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  });
+
+  // data.middleFinger.map((i) => {
+  //   ctx.beginPath();
+  //   ctx.arc(i[0], i[1], 5, 0, 2 * Math.PI, false);
+  //   ctx.strokeStyle = "#FF0000";
+
+  //   ctx.lineWidth = 3;
+  //   ctx.stroke();
+  // });
+
+  // data.indexFinger.map((i) => {
+  //   ctx.beginPath();
+  //   ctx.arc(i[0], i[1], 5, 0, 2 * Math.PI, false);
+  //   ctx.strokeStyle = "#FF0000";
+
+  //   ctx.lineWidth = 3;
+  //   ctx.stroke();
+  // });
+
+  // data.ringFinger.map((i) => {
+  //   ctx.beginPath();
+  //   ctx.arc(i[0], i[1], 5, 0, 2 * Math.PI, false);
+  //   ctx.strokeStyle = "#FF0000";
+
+  //   ctx.lineWidth = 3;
+  //   ctx.stroke();
+  // });
+
+  // data.thumb.map((i) => {
+  //   ctx.beginPath();
+  //   ctx.arc(i[0], i[1], 5, 0, 2 * Math.PI, true);
+  //   ctx.strokeStyle = "#FF0000";
+
+  //   ctx.lineWidth = 3;
+  //   ctx.stroke();
+  // });
+
+  
+  // data.pinky.map((i) => {
+  //   ctx.beginPath();
+  //   ctx.arc(i[0], i[1], 5, 0, 2 * Math.PI, false);
+  //   ctx.strokeStyle = "#FF0000";
+
+  //   ctx.lineWidth = 3;
+  //   ctx.stroke();
+  // });
+
+  // data.palmBase.map((i) => {
+  //   ctx.beginPath();
+  //   ctx.arc(i[0], i[1], 5, 0, 2 * Math.PI, false);
+  //   ctx.strokeStyle = "#FF0000";
+
+  //   ctx.lineWidth = 3;
+  //   ctx.stroke();
+  // });
+
+
+
+}
+
+ async function predictionFunction(){
+  const model = await handpose.load();
+console.log("Loading")
+
   const predictions = await model.estimateHands(document.getElementById('img'));
   if (predictions.length > 0) {
     console.log(predictions)
-Draw(predictions[0].annotations)
+Draw(predictions[0].annotations,predictions[0])
     for (let i = 0; i < predictions.length; i++) {
       const keypoints = predictions[i].landmarks;
 
@@ -74,135 +161,50 @@ Draw(predictions[0].annotations)
       }
     }
   }
-  } catch (err) {
-    console.log(err);
-  }
-   
+  else{
+    console.log(predictions)
+    console.log("No hand detected")
+    var cnvs = document.getElementById("myCanvas");
+
+    cnvs.style.position = "absolute";
   
+    var ctx = cnvs.getContext("2d");
+    ctx.clearRect(0, 0, cnvs.width, cnvs.height);
   
-}
-
-
-function Draw(data) {
-  console.log(data);
-  var cnvs = document.getElementById("myCanvas");
-
-  cnvs.style.position = "absolute";
-
-  var ctx = cnvs.getContext("2d");
-  data.middleFinger.map((i) => {
-    ctx.beginPath();
-    ctx.arc(i[0], i[1], 5, 0, 2 * Math.PI, false);
-    ctx.strokeStyle = "#FF0000";
-
-    ctx.lineWidth = 3;
-    ctx.stroke();
-  });
-
-  data.indexFinger.map((i) => {
-    ctx.beginPath();
-    ctx.arc(i[0], i[1], 5, 0, 2 * Math.PI, false);
-    ctx.strokeStyle = "#FF0000";
-
-    ctx.lineWidth = 3;
-    ctx.stroke();
-  });
-
-  data.ringFinger.map((i) => {
-    ctx.beginPath();
-    ctx.arc(i[0], i[1], 5, 0, 2 * Math.PI, false);
-    ctx.strokeStyle = "#FF0000";
-
-    ctx.lineWidth = 3;
-    ctx.stroke();
-  });
-
-  data.thumb.map((i) => {
-    ctx.beginPath();
-    ctx.arc(i[0], i[1], 5, 0, 2 * Math.PI, true);
-    ctx.strokeStyle = "#FF0000";
-
-    ctx.lineWidth = 3;
-    ctx.stroke();
-  });
-
-  
-  data.pinky.map((i) => {
-    ctx.beginPath();
-    ctx.arc(i[0], i[1], 5, 0, 2 * Math.PI, false);
-    ctx.strokeStyle = "#FF0000";
-
-    ctx.lineWidth = 3;
-    ctx.stroke();
-  });
-
-  data.palmBase.map((i) => {
-    ctx.beginPath();
-    ctx.arc(i[0], i[1], 5, 0, 2 * Math.PI, false);
-    ctx.strokeStyle = "#FF0000";
-
-    ctx.lineWidth = 3;
-    ctx.stroke();
-  });
-
-
-
-}
-
-
-  
-
-
-async function loadMetadata(url) {
-  try {
-    const metadataJson = await fetch(url.metadata);
-    const metadata = await metadataJson.json();
-    setMetadata(metadata);
-  } catch (err) {
-    console.log(err);
   }
 }
 
+useEffect(() => {
+  predictionFunction()
+}, [imageData])
 
-const getSentimentScore =(text) => {
-  console.log(text)
-  const inputText = text.trim().toLowerCase().replace(/(\.|\,|\!)/g, '').split(' ');
-  setTrim(inputText)
-  console.log(inputText)
-  const sequence = inputText.map(word => {
-    let wordIndex = metadata.word_index[word] + metadata.index_from;
-    if (wordIndex > metadata.vocabulary_size) {
-      wordIndex = OOV_INDEX;
-    }
-    return wordIndex;
-  });
-  setSeq(sequence)
-  console.log(sequence)
-  // Perform truncation and padding.
-  const paddedSequence = padSequences([sequence], metadata.max_len);
-  console.log(metadata.max_len)
-  setPad(paddedSequence)
+  
 
-  const input = tf.tensor2d(paddedSequence, [1, metadata.max_len]);
-  console.log(input)
-  setInput(input)
-  const predictOut = model.predict(input);
-  const score = predictOut.dataSync()[0];
-  predictOut.dispose();
-  setScore(score)  
-  return score;
-}
+
 
 
 useEffect(()=>{
   tf.ready().then(
     ()=>{
       loadModel(url)
-      loadMetadata(url)
+
     }
   );
 
 },[])
+
+
+const handleCapture = (target) => {
+  if (target.files) {
+    if (target.files.length !== 0) {
+      const file = target.files[0];
+      const newUrl = URL.createObjectURL(file);
+      setImageData(newUrl);
+      predictionFunction()
+    
+    }
+  }}
+
 
   return (
 
@@ -217,73 +219,21 @@ useEffect(()=>{
           </Typography>
         </Toolbar>
       </AppBar>
-      <Grid container style={{ height:"90vh", padding:20}}>
-      <img style={{width:1080, height: 720}} id="img" src="hand.jpg"></img>
+      <Button variant={"outlined"} onClick ={()=>{setImageData("hand2.jpg")}}>Hand 2</Button>
+      <Button variant={"outlined"} onClick ={()=>{setImageData("hand.jpg")}}>Hand 1</Button>
 
-<canvas id='myCanvas' width="1080" height="720" style={{backgroundColor:"transparent"}} >
+      <input accept="image/*" id="icon-button-file" type="file" capture="environment" onChange={(e) => handleCapture(e.target)}/>
 
-  
+      <Grid container style={{ height:"90vh", }}>
+      
+      <img style={{width:960, height: 540, objectFit: "contain"}} id="img" src={imageData}></img>
 
-</canvas>
-      <Grid item lg={6} xs={12} style={{display:"flex",alignItems:"center", flexDirection:"column"}}>
-   
-      <TextField
-          id="standard-read-only-input"
-          label="Type your sentences here"
-          onChange={(e)=> setText(e.target.value)}
-          defaultValue=""
-          value={testText}
-          multiline
-          rows={4}
-          variant="outlined"
-        />
-        <br/>
-        <br/>
-        {testText !== "" ?
-              <Button style={{width:"20vh", height:"5vh"}} variant= "outlined" onClick={()=>getSentimentScore(testText)}>Calculate</Button>
-      : <></>}
+<canvas id='myCanvas' width={960} height={540} style={{backgroundColor:"transparent"}} />
+
+
 
       </Grid>
-<Grid item lg={6} xs ={12} style={{display:"flex", alignItems:"center", flexDirection:'column'}}>
-  <br/>
-<Typography>Whats going on:</Typography>
-<br/>
-{testScore !==""?
-<>
- <Typography style={{color:"blue"}} variant="h5">{testScore}</Typography> 
- <br/>
- <Typography>1 = Positive, 0 = Negative</Typography>
-<br/>
-<Typography>Trimmed the input text:</Typography>
-<br/>
-<Typography  style={{color:"green"}}> {trimedText.toString()}</Typography>
-<br/>
-<Typography>Map vocab to words: </Typography>
-<br/>
-<Typography  style={{color:"green"}}> {seqText.toString()}</Typography>
-<br/>
-<Typography>Fix the length:</Typography>
-<br/>
-<Typography style={{color:"green",wordWrap: "break-word", width:"80%" }}>{padText.toString()}</Typography>
-<br/>
-<Typography>Input to tf:</Typography>
-<br/>
-<Typography style={{color:"green",wordWrap: "break-word", width:"80%" }}>{inputText.toString()}</Typography>
-<br/>
-<a href={url.model}>Model Link</a>
-<a href={url.metadata}>Model Metadata</a>
-
-<br/>
-
-</>
-
-
-:<></>}
- 
-
-</Grid>
-      </Grid>
-
+      <Button onClick ={()=>{setImageData("hand2.jpg")}}></Button>
      </>
     
   );
