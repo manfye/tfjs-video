@@ -7,6 +7,7 @@ import {
   AppBar,
   Toolbar,
   Typography,
+  Box,
   IconButton,
   Button,
 } from "@material-ui/core";
@@ -40,9 +41,9 @@ function App() {
   };
 
   const [inputText, setInput] = useState("");
-  const [imageData, setImageData] = useState("hand.jpg");
+  const [imageData, setImageData] = useState("");
   const [model, setModel] = useState();
-
+  const [predictionData, setPredictionData] = useState('')
   async function loadModel(url) {
     try {
       const model = await tf.loadGraphModel(url.model);
@@ -117,15 +118,26 @@ function App() {
     });
   }, []);
 
+ 
 
   async function  predictTuber(){
+    setPredictionData("")
+try{
   let tensor = tf.browser.fromPixels(document.getElementById("img"), 3)
 		.resizeNearestNeighbor([224, 224]) // change the image size
 		.expandDims()
 		.toFloat()
 		.reverse(-1); // RGB -> BGR
-	let predictions = await model.predict(tensor).data();
-	console.log(predictions);
+  let predictions = await model.predict(tensor).data();
+  console.log(predictions);
+
+  setPredictionData(predictions)
+  
+}
+catch (err){
+  console.log(err)
+}
+
 }
 
   const handleCapture = (target) => {
@@ -151,34 +163,32 @@ function App() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            TensorflowJS Test
+            TensorflowJS Image Classification
           </Typography>
         </Toolbar>
       </AppBar>
-      <Button
+     
+      <Box mt={1}/>
+      <Grid container style={{ height: "90vh", padding: 20 }}>
+  
+        <Grid item xs={12} md={6}>
+        <Button
         variant={"outlined"}
         onClick={() => {
-          setImageData("hand2.jpg");
+          setImageData("normal.png");
         }}
       >
-        Hand 2
+        Normal
       </Button>
       <Button
         variant={"outlined"}
         onClick={() => {
-          setImageData("hand.jpg");
+          setImageData("tuber.png");
         }}
       >
-        Hand 1
+       Tuber
       </Button>
-      <Button
-        variant={"outlined"}
-        onClick={() => {
-          predictTuber()
-        }}
-      >
-        Predict
-      </Button>
+      <Box mt={1}/>
       <input
         accept="image/*"
         id="icon-button-file"
@@ -186,20 +196,40 @@ function App() {
         capture="environment"
         onChange={(e) => handleCapture(e.target)}
       />
-
-      <Grid container style={{ height: "90vh" }}>
+      <Box mt={2}/>
+    
+      <Button
+        variant={"contained"}
+        style={{color:"white", backgroundColor:"blueviolet"}}
+        onClick={() => {
+          predictTuber()
+        }}
+      >
+       Predict
+      </Button>
+          <Box mt={2}/>
+{predictionData? <>  
+ <Typography>{"Normal: "+predictionData[0]}</Typography>
+ <Typography>{"Tuber: "+predictionData[1]}</Typography> </>
+: null     
+}
+        </Grid>
+        <Grid item xs={12} md={6}>
         <img
-          style={{ width: 960, height: 540, objectFit: "fill" }}
+          style={{ width: "50%", objectFit: "fill" }}
           id="img"
           src={imageData}
         ></img>
+          
+</Grid>
+     
 
-        <canvas
+        {/* <canvas
           id="myCanvas"
           width={960}
           height={540}
           style={{ backgroundColor: "transparent" }}
-        />
+        /> */}
       </Grid>
       <Button
         onClick={() => {
